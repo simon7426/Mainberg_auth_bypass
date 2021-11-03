@@ -16,9 +16,10 @@ def task():
         ip = data.get('ip')
         jsessionid = data.get('JSessionId')
         ##### LEVEL 1 ENCRYPTION ******************
-        user = 'testclient'
+        user = request.form.get('owner')
         password = os.environ.get('MAINBERG_PASSWORD')
         plain_text = (user+':'+ip+':'+password).encode('utf-8')
+        print(plain_text)
         level_1_encrypt = hashlib.sha256(plain_text).hexdigest()
         ##### LEVEL 2 ENCRYPTION ******************
         level_2_plain_text = (level_1_encrypt + ':' + key).encode('utf-8')
@@ -43,5 +44,6 @@ def task():
 def alive():
     return {"msg": "alive"}
 
-if __name__ == "_main_":
-    app.run(host="0.0.0.0",port=8080)
+if __name__ == "__main__":
+    print("Inside main")
+    app.run(host="localhost",port=8080,debug=True)
