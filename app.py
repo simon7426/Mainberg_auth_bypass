@@ -5,9 +5,17 @@ import os
 
 app = Flask(__name__)
 
-@app.route("/api/v1/task",methods=['POST'])
+@app.route("/api/v1/task",methods=['GET'])
 def task():
     try:
+        query_string = request.query_string.decode('utf-8')
+        split_data = query_string.split('&')
+        inp_data = {}
+        for item in split_data:
+            key,val = item.split('=')
+            inp_data[key] = val
+        print(inp_data)
+        # return make_response(jsonify({'message':'success'}))
         sess = requests.session()
         get_key_url = 'http://36.255.68.39:8082/key.jsp?actionId=getKey'
         resp = sess.get(get_key_url)
@@ -16,7 +24,7 @@ def task():
         ip = data.get('ip')
         jsessionid = data.get('JSessionId')
         ##### LEVEL 1 ENCRYPTION ******************
-        user = request.form.get('owner')
+        user = inp_data.get('owner')
         password = os.environ.get('MAINBERG_PASSWORD')
         plain_text = (user+':'+ip+':'+password).encode('utf-8')
         print(plain_text)
@@ -30,10 +38,7 @@ def task():
         print(login_resp.json())
         campaign_url =  'http://36.255.68.39:8082/campaign/api.jsp'
         headers = {'Content-type': 'application/x-www-form-urlencoded'}
-        data = {}
-        for tmp_key,val in request.form.items():
-            data[tmp_key] = val
-        campaign_resp = sess.post(url=campaign_url,data=data,headers=headers)
+        campaign_resp = sess.post(url=campaign_url,data=inp_data,headers=headers)
         return make_response(campaign_resp.json()),campaign_resp.status_code
     except Exception as e:
         print(e)
