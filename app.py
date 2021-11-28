@@ -1,3 +1,4 @@
+# version 0.4 password in query string
 from flask import Flask,make_response,request,jsonify
 import hashlib
 import requests
@@ -25,7 +26,8 @@ def task():
         jsessionid = data.get('JSessionId')
         ##### LEVEL 1 ENCRYPTION ******************
         user = inp_data.get('owner')
-        password = os.environ.get('MAINBERG_PASSWORD')
+        # password = os.environ.get('MAINBERG_PASSWORD')
+        password = inp_data.get('password')
         plain_text = (user+':'+ip+':'+password).encode('utf-8')
         print(plain_text)
         level_1_encrypt = hashlib.sha256(plain_text).hexdigest()
@@ -52,3 +54,6 @@ def alive():
 if __name__ == "__main__":
     print("Inside main")
     app.run(host="localhost",port=8080,debug=True)
+
+
+# http://localhost:5000/api/v1/task?actionId=runCampaign&owner=VOTPwsL&campaignId=VOTPwsL&authUserId=VOTPwsL&lotNumber=VOTPwsL&service=campaign&destinationNumber=008801991725504&orderNumber=2441139
